@@ -14,17 +14,17 @@ function expressionCalculator(expr) {
             if (parseFloat(b) === 0) throw "TypeError: Devision by zero."
             return parseFloat(a)/parseFloat(b) 
         })
-
+    
         const mul = (ex) => ex.toString().split('*').length > 1 ? ex.toString().split('*')
                             .reduce((a,b) => parseFloat(div(a))*parseFloat(div(b))) : div(ex);
-
+    
         const sub = (ex) => ex.toString().split('&').length > 1 ? ex.toString().split('&')
                             .reduce((a,b)=> parseFloat(mul(a))-parseFloat(mul(b))) : mul(ex);
-
+    
         const sum = (ex) => ex.toString().split('+').length > 1 ? ex.toString().split('+')
                             .reduce((a,b) => parseFloat(sub(a))+parseFloat(sub(b))) : sub(ex);
         return sum(expr)
-}
+    }
 
     const bracket_check = (ex) => {
         if (ex.indexOf('(') > ex.indexOf(')')) { throw "ExpressionError: Brackets must be paired"};
@@ -46,7 +46,7 @@ function expressionCalculator(expr) {
         let pad = str.slice(start_pad +1, start_pad + end_pad);
         let time_string = str.replace(`(${pad})`, simple(pad).toString())
         if (bracket_check(time_string)) {
-            time_string = slice_string(time_string, time_string.length)
+            return slice_string(time_string, time_string.length)
         }
         else {
             return simple(time_string)
