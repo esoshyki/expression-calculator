@@ -14,7 +14,7 @@ function expressionCalculator(expr) {
         if (isBracketIn(str)) throw "ExpressionError: Brackets must be paired"
 
         const div = (ex) => ex.toString().split('/').reduce((a,b) => {
-            if (parseFloat(b) === 0) throw "TypeError: Devision by zero."
+            if (parseFloat(b) === 0) throw "TypeError: Division by zero."
             return parseFloat(a)/parseFloat(b) 
         })
   
