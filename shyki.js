@@ -1,60 +1,59 @@
-const exp =" 93 * 30 / 81 * (  78 * 83 / (  71 * 13 - (  14 + 13 - 28 * 62  ) * 62  ) + 99 - (  80 - 89 + 17 * 42  )  ) ";
-
-let res;
-
-const del_spaces = (ex) => ex.replace(' ', '');
-
-const simple = (expr) => {
-    const div = (ex) => ex.toString().split('/').reduce((a,b) => {
-        if (parseFloat(b) === 0) throw "TypeError: Devision by zero."
-        return parseFloat(a)/parseFloat(b) 
-    })
-
-    const mul = (ex) => ex.toString().split('*').length > 1 ? ex.toString().split('*')
-                        .reduce((a,b) => parseFloat(div(a))*parseFloat(div(b))) : div(ex);
-
-    const sub = (ex) => ex.toString().split('&').length > 1 ? ex.toString().split('&')
-                        .reduce((a,b)=> parseFloat(mul(a))-parseFloat(mul(b))) : mul(ex);
-
-    const sum = (ex) => ex.toString().split('+').length > 1 ? ex.toString().split('+')
-                        .reduce((a,b) => parseFloat(sub(a))+parseFloat(sub(b))) : sub(ex);
-    console.log(`expr in simple = ${expr}`)
-    return sum(expr)
+function eval() {
+    // Do not use eval!!!
+    return;
 }
 
-const bracket_check = (ex) => {
-    console.log(ex.indexOf('('));
-    console.log(ex.indexOf(')'));   
-    if (ex.indexOf('(') < 0 && ex.indexOf(')') < 0) {
-        return false
+function expressionCalculator(expr) {
+
+    const isBracketIn = str => str.search(/[()]/) >= 0;
+
+    const simple = (expr) => {
+
+        const str = expr[0] === '&' ? '0 ' + expr : expr
+        console.log(str)
+
+        if (isBracketIn(str)) throw "ExpressionError: Brackets must be paired"
+
+        const div = (ex) => ex.toString().split('/').reduce((a,b) => {
+            if (parseFloat(b) === 0) throw "TypeError: Devision by zero."
+            return parseFloat(a)/parseFloat(b) 
+        })
+  
+        const mul = (ex) => ex.toString().split('*').length > 1 ? ex.toString().split('*')
+                            .reduce((a,b) => parseFloat(div(a))*parseFloat(div(b))) : div(ex);
+    
+        const sub = (ex) => ex.toString().split('&').length > 1 ? ex.toString().split('&')
+                            .reduce((a,b)=> parseFloat(mul(a))-parseFloat(mul(b))) : mul(ex);
+    
+        const sum = (ex) => ex.toString().split('+').length > 1 ? ex.toString().split('+')
+                            .reduce((a,b) => parseFloat(sub(a))+parseFloat(sub(b))) : sub(ex);
+        return sum(str.split(' ').join(''))
     }
-    if (ex.indexOf('(') >= 0 && ex.indexOf(')') >= 0) {
-        return true
+
+    const getOutBrackets = str => str.replace('( ', '').replace(' )', '');
+    
+    const slice_string = str => {
+
+        const bracketsArray = str.match(/\([^()]+\)/g);
+
+        if (!bracketsArray) return simple(str)
+
+        const newString = bracketsArray.reduce((acc, cur) => {
+            const result = simple(getOutBrackets(cur))
+            return acc.replace(cur, result.toString())
+        }, str)
+
+        return slice_string(newString)
     }
+
+    return slice_string(expr.replace(/-/g, '&'))
 }
 
-const slice_string = (str, len) => {
-    console.log(`slice_string starts`)
-    let start_pad = str.lastIndexOf('(');
-    let substr = str.slice(start_pad, len);
-    let end_pad = substr.indexOf(')');
-    let pad = str.slice(start_pad +1, start_pad + end_pad);
-    console.log(`pad = ${pad}`)
-    let time_string = str.replace(`(${pad})`, simple(pad).toString());
-    console.log(`time_string = ${time_string}`)
-    if (bracket_check(time_string)) {
-        return slice_string(time_string, time_string.length);
-    }
-    else {
-        console.log(`time_string in recur = ${time_string}`)
-        return simple(time_string)
-    }
+
+const ex = "-1 + 2 * 3"
+
+console.log(expressionCalculator(ex))
+
+module.exports = {
+    expressionCalculator
 }
-
-let str = del_spaces(exp.replace(/-/g,'&'));
-console.log(`str in beginning = ${str}`)
-let len = str.length
-res = bracket_check(str) ? slice_string(str, len) : simple(str);
-
-console.log(res)
-
